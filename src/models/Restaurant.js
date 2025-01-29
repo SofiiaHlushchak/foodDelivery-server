@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const restaurantSchema = new mongoose.Schema({
     id: { type: String, required: true },
@@ -16,4 +16,5 @@ const restaurantSchema = new mongoose.Schema({
 });
 
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
-module.exports = Restaurant;
+
+export default Restaurant;
