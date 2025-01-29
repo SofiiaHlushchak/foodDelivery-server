@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const foodItemSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true },
@@ -21,4 +21,4 @@ const foodItemSchema = new mongoose.Schema({
 
 const FoodItem = mongoose.model("FoodItem", foodItemSchema);
 
-module.exports = FoodItem;
+export default FoodItem;
