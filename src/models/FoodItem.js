@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const foodItemSchema = new mongoose.Schema({
-    id: { type: String, required: true, unique: true },
+    id: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
@@ -16,7 +16,7 @@ const foodItemSchema = new mongoose.Schema({
         },
     ],
     imgUrl: { type: String, required: true },
-    restaurantId: { type: String, required: true },
+    restaurantId: { type: String, ref: "Restaurant", required: true },
 });
 
 const FoodItem = mongoose.model("FoodItem", foodItemSchema);
