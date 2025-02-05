@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./db.js";
 import restaurantRoutes from "./routes/restaurantRoutes.js";
-import foodItemRoutes from './routes/foodItemRoutes.js'
+import foodItemRoutes from "./routes/foodItemRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,8 @@ app.get("/", (req, res) => {
 
 app.use("/restaurants", restaurantRoutes);
 app.use("/dishes", foodItemRoutes);
+
+app.use("/api/auth", authRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
