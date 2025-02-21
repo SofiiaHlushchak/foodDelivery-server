@@ -12,7 +12,13 @@ export const buildQuery = ({ name, categories, rating }) => {
     }
 
     if (rating) {
-        query.rating = { $gte: Number(rating) };
+        const minRating = Math.floor(Number(rating));
+        const maxRating = minRating + 0.9;
+
+        query.rating = {
+            $gte: minRating,
+            $lte: maxRating,
+        };
     }
 
     return query;
