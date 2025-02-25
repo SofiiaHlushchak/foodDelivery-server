@@ -18,5 +18,5 @@ export function issueAccessToken(payload) {
         throw new Error("JWT_SECRET is missing from environment variables");
     }
 
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+    return jwt.sign(payload, process.env.JWT_SECRET;
 }
