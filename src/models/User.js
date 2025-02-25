@@ -21,6 +21,23 @@ const userSchema = new mongoose.Schema(
             trim: true,
             unique: true,
         },
+        phoneNumber: {
+            type: String,
+            trim: true,
+        },
+        deliveryAddress: {
+            region: { type: String },
+            city: { type: String },
+            street: { type: String },
+        },
+        novaPostDepartment: {
+            type: String,
+            required: false,
+        },
+        age: {
+            type: Number,
+            min: 16,
+        },
     },
     { timestamps: true }
 );
