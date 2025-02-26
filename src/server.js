@@ -6,6 +6,7 @@ import foodItemRoutes from "./routes/foodItemRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import novaPoshtaRoutes from "./routes/novaPoshtaRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 const port = 3000;
@@ -27,6 +28,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/novaposhta", novaPoshtaRoutes);
+
+app.use("/api/payment", paymentRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
