@@ -29,7 +29,7 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/novaposhta", novaPoshtaRoutes);
 
-app.use("/api/payment", paymentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
