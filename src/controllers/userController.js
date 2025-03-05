@@ -10,7 +10,6 @@ import {
 } from "../utils/helper.js";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
-import jwt from "jsonwebtoken";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -145,15 +144,9 @@ export const facebookLoginUser = async (req, res) => {
 
 export const getLoggedUser = async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1];
+        const userId = req.userId;
 
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        const user = await User.findById(decoded.userId).select("-password");
+        const user = await User.findById(userId).select("-password");
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -168,14 +161,7 @@ export const getLoggedUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1];
-
-        if (!token) {
-            return res.status(401).json({ message: "Token not provided" });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.userId;
+        const userId = req.userId;
 
         const updatedFields = req.body;
 
