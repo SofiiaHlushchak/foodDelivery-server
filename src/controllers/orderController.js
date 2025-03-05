@@ -15,12 +15,17 @@ export const createOrder = async (req, res) => {
                 .json({ message: "Card number is required for card payments" });
         }
 
+        const lastOrder = await Order.findOne().sort({ number: -1 });
+
+        const orderNumber = lastOrder?.number ? lastOrder?.number + 1 : 1;
+
         const orderData = {
             userId,
             totalPrice,
             paymentMethod,
             foodItems: foodItems,
             status: "pending",
+            number: orderNumber,
         };
 
         if (paymentMethod === "card") {
@@ -39,24 +44,32 @@ export const createOrder = async (req, res) => {
 
 export const getUserOrders = async (req, res) => {
     try {
-        const userId = req.userId;
+        const { userId } = req;
 
         if (!userId) {
             return res.status(400).json({ message: "User ID not found" });
         }
 
-        const orders = await Order.find({ userId }).populate(
-            "foodItems.foodId",
-            "name price"
-        );
+        const orders = await Order.find({ userId })
+            .populate("foodItems.foodId", "name price imgUrl ingredients")
+            .lean();
 
-        if (!orders || orders.length === 0) {
+        if (!orders.length) {
             return res
                 .status(404)
                 .json({ message: "No orders found for this user" });
         }
 
-        res.status(200).json(orders);
+        const modifiedOrders = orders.map((order) => ({
+            ...order,
+            foodItems: order.foodItems.map((foodItem) => ({
+                dish: foodItem.foodId,
+                quantity: foodItem.quantity,
+                addons: foodItem.addons,
+            })),
+        }));
+
+        res.status(200).json(modifiedOrders);
     } catch (error) {
         console.error("Error getting orders:", error);
         res.status(500).json({ message: "Server error" });
