@@ -1,19 +1,11 @@
 import PaymentCard from "../models/PaymentCard.js";
-import jwt from "jsonwebtoken";
 import stripeLib from "stripe";
 
 const stripe = stripeLib(process.env.STRIPE_SECRET_KEY);
 
 export const savePaymentCard = async (req, res) => {
     const { cardNumber, expirationDate } = req.body;
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "Token not provided" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
+    const userId = req.userId;
 
     if (!cardNumber || !expirationDate) {
         return res
@@ -36,15 +28,8 @@ export const savePaymentCard = async (req, res) => {
 };
 
 export const getUserPaymentCards = async (req, res) => {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "Token not provided" });
-    }
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.userId;
+        const userId = req.userId;
 
         const paymentCards = await PaymentCard.find({ userId });
 

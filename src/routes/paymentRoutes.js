@@ -4,10 +4,12 @@ import {
     savePaymentCard,
     createPaymentLink,
 } from "../controllers/paymentController.js";
+import { authenticateUser } from "../middleware/authenticateUser.js";
 
 const router = express.Router();
 
-router.get("/", getUserPaymentCards);
-router.post("/save", savePaymentCard);
-router.post("/create-payment-link", createPaymentLink);
+router.get("/", authenticateUser, getUserPaymentCards);
+router.post("/save", authenticateUser, savePaymentCard);
+router.post("/create-payment-link", authenticateUser, createPaymentLink);
+
 export default router;
