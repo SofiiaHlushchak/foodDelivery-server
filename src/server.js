@@ -1,4 +1,6 @@
 import express from "express";
+import { createServer } from "http";
+import { WebSocketServer } from "ws";
 import cors from "cors";
 import connectDB from "./db.js";
 import restaurantRoutes from "./routes/restaurantRoutes.js";
@@ -7,10 +9,14 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import novaPoshtaRoutes from "./routes/novaPoshtaRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
-import orderRoutes from './routes/orderRoutes.js'
+import orderRoutes from "./routes/orderRoutes.js";
+import { initializeWebSocket } from "./websocket/server.js";
 
 const app = express();
 const port = 3000;
+
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
 
 app.use(express.json());
 
@@ -34,6 +40,8 @@ app.use("/api/payments", paymentRoutes);
 
 app.use("/api/orders", orderRoutes);
 
-app.listen(port, () => {
+initializeWebSocket(wss);
+
+server.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
