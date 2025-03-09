@@ -15,6 +15,7 @@ const restaurantSchema = new mongoose.Schema(
         isFavourite: Boolean,
         rating: Number,
         verified: Boolean,
+        address: String,
     },
     { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
