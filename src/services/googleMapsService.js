@@ -45,7 +45,18 @@ export const getRoute = async (origin, destination) => {
             key: GOOGLE_MAPS_API_KEY,
         },
     });
-    return response.data.routes[0]?.legs[0]?.steps.map(
-        (step) => step.end_location
-    );
+
+    const route = response.data.routes[0];
+
+    if (!route) {
+        console.error("Route not found!");
+        return { steps: [], distance: 0 };
+    }
+
+    const distance = route.legs[0]?.distance?.value ?? 0;
+
+    return {
+        steps: route.legs[0]?.steps.map((step) => step.end_location),
+        distance: distance / 1000,
+    };
 };

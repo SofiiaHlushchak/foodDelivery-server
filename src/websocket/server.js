@@ -16,6 +16,16 @@ export const initializeWebSocket = (wss) => {
                 return ws.send(JSON.stringify({ error: "Order not found" }));
             }
 
+            order.status = "confirmed";
+
+            await order.save();
+            ws.send(
+                JSON.stringify({
+                    status: order.status,
+                    statusUpdatedAt: new Date().toISOString(),
+                })
+            );
+
             const firstFoodItem = order.foodItems[0]?.foodId;
             const restaurant = await Restaurant.findOne({
                 id: firstFoodItem.restaurantId,
@@ -32,32 +42,49 @@ export const initializeWebSocket = (wss) => {
             const userCoords = await getCoordinates(
                 `${user.deliveryAddress.street}, ${user.deliveryAddress.city}, ${user.deliveryAddress.region}`
             );
+
             if (!restaurantCoords || !userCoords) {
                 return ws.send(
                     JSON.stringify({ error: "Unable to fetch coordinates" })
                 );
             }
 
-            const route = await getRoute(restaurantCoords, userCoords);
-            if (!route || route.length === 0) {
+            const { steps, distance } = await getRoute(
+                restaurantCoords,
+                userCoords
+            );
+
+            if (!steps || steps.length === 0) {
                 return ws.send(JSON.stringify({ error: "Route not found" }));
             }
+
+            ws.send(JSON.stringify({ restaurantCoords, userCoords, distance }));
 
             let index = 0;
             order.status = "shipped";
 
             await order.save();
-            ws.send(JSON.stringify({ status: "shipped" }));
+            ws.send(
+                JSON.stringify({
+                    status: order.status,
+                    statusUpdatedAt: new Date().toISOString(),
+                })
+            );
 
             const interval = setInterval(async () => {
-                if (index < route.length) {
-                    ws.send(JSON.stringify({ location: route[index] }));
+                if (index < steps.length) {
+                    ws.send(JSON.stringify({ location: steps[index] }));
                     index++;
                 } else {
                     clearInterval(interval);
                     order.status = "delivered";
                     await order.save();
-                    ws.send(JSON.stringify({ status: "delivered" }));
+                    ws.send(
+                        JSON.stringify({
+                            status: order.status,
+                            statusUpdatedAt: new Date().toISOString(),
+                        })
+                    );
 
                     ws.close();
                 }
