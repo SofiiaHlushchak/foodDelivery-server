@@ -46,3 +46,31 @@ export const getRestaurantById = async (req, res) => {
         res.status(500).json({ message: "Error fetching restaurant", error });
     }
 };
+
+export const updateRestaurantRating = async (req, res) => {
+    const { restaurantId } = req.params;
+    const { rating } = req.body;
+
+    try {
+        if (rating < 1 || rating > 5) {
+            return res
+                .status(400)
+                .json({ message: "Rating must be between 1 and 5" });
+        }
+
+        const restaurant = await Restaurant.findOne({ id: restaurantId });
+
+        if (!restaurant) {
+            return res.status(404).json({ message: "Restaurant not found" });
+        }
+
+        restaurant.feedbacks = restaurant.feedbacks + 1;
+
+        await restaurant.save();
+
+        res.status(200).json(restaurant);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
