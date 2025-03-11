@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import Restaurant from "../models/Restaurant.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -80,10 +81,21 @@ export const getOrderById = async (req, res) => {
     try {
         const orderId = req.params.orderId;
 
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(orderId).populate(
+            "foodItems.foodId"
+        ).lean();
 
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
+        }
+
+        const firstFoodItem = order.foodItems[0]?.foodId;
+
+        if (firstFoodItem?.restaurantId) {
+            const restaurant = await Restaurant.findOne({
+                id: firstFoodItem.restaurantId,
+            });
+            order.restaurant = restaurant;
         }
 
         res.json(order);

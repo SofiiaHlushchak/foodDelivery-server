@@ -17,6 +17,7 @@ const foodItemSchema = new mongoose.Schema({
     ],
     imgUrl: { type: String, required: true },
     restaurantId: { type: String, ref: "Restaurant", required: true },
+    isFavourite: { type: Boolean, required: false },
 });
 
 const FoodItem = mongoose.model("FoodItem", foodItemSchema);
