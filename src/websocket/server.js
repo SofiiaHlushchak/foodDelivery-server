@@ -3,6 +3,8 @@ import Restaurant from "../models/Restaurant.js";
 import User from "../models/User.js";
 import { getCoordinates, getRoute } from "../services/googleMapsService.js";
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const initializeWebSocket = (wss) => {
     wss.on("connection", (ws) => {
         console.log("WebSocket client connected");
@@ -19,6 +21,8 @@ export const initializeWebSocket = (wss) => {
             order.status = "confirmed";
 
             await order.save();
+            await delay(1000);
+
             ws.send(
                 JSON.stringify({
                     status: order.status,
@@ -64,6 +68,8 @@ export const initializeWebSocket = (wss) => {
             order.status = "shipped";
 
             await order.save();
+            await delay(1000);
+
             ws.send(
                 JSON.stringify({
                     status: order.status,
@@ -73,7 +79,19 @@ export const initializeWebSocket = (wss) => {
 
             const interval = setInterval(async () => {
                 if (index < steps.length) {
-                    ws.send(JSON.stringify({ location: steps[index] }));
+                    const currentLocation = steps[index];
+
+                    const { distance } = await getRoute(
+                        currentLocation,
+                        userCoords
+                    );
+
+                    ws.send(
+                        JSON.stringify({
+                            location: currentLocation,
+                            distance: distance,
+                        })
+                    );
                     index++;
                 } else {
                     clearInterval(interval);

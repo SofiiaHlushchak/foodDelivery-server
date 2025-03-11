@@ -22,7 +22,7 @@ export const getRestaurants = async (req, res) => {
             query.id = { $in: restaurantIds };
         }
 
-        const restaurants = await Restaurant.find(query).sort(sortOptions);
+        const restaurants = await Restaurant.find(query).sort(sortOptions).populate("foodItems");
 
         res.status(200).json(restaurants);
     } catch (error) {
